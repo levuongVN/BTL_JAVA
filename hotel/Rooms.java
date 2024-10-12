@@ -6,10 +6,8 @@ import java.io.IOException; // In ra các thông báo lỗi
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Scanner;
-class KhachSan {
-    public void display(){ // upcasting
-        System.out.println("This is a display method");
-    };
+abstract class KhachSan {
+ abstract void display();
 }
 
 class CheckFile{

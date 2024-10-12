@@ -103,7 +103,7 @@ class AddEmployees extends EmployeesCheckFile{
                 }
             } catch (IOException e) {
                 System.out.println("Error: " + e.getMessage());
-            }   
+            }
         }else{
             System.out.println("Thêm thất bại");
         }
@@ -132,7 +132,6 @@ class EmployeesDisplay extends KhachSan {
             }else{
                 System.out.println("Danh sách nhân viên:");
                 for(int i=1;i<epls.Idemployees.size();i++){
-                    System.out.println("\n");
                     System.out.println("Mã nhân viên: "+epls.Idemployees.get(i));
                     System.out.println("Họ tên nhân viên: "+epls.NameEmployees.get(i));
                     System.out.println("Chức vụ nhân viên: "+epls.PositionEmployees.get(i));

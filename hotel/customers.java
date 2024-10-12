@@ -301,6 +301,7 @@ public class customers {
                 CheckInCheckOut checkInCheckOut = new CheckInCheckOut();
                 checkInCheckOut.checkInCheckOut();
                 break;
+                
             default:
                 System.out.println("Lựa chọn không hợp lệ, vui lòng nhập lại");
                 break;
