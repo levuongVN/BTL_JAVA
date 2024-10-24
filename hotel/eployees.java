@@ -44,6 +44,7 @@ class EmployeesCheckFile extends Employees {
                 SalaryEmployees.add(values[3]);
                 DateJoinEmployees.add(values[4]);
                 DateLeaveEmployees.add(values[5]);
+                EvaluationEmployees.add(values[6]);
             }
             return true;
         } catch (IOException e) {
@@ -53,59 +54,84 @@ class EmployeesCheckFile extends Employees {
     }
 }
 class AddEmployees extends EmployeesCheckFile{
-    Scanner scanner = new Scanner(System.in);
-    public boolean add(){
-        Check_File();
-        System.out.println("Nhập số nhân viên muốn thêm: ");
-        int num = scanner.nextInt();
-        scanner.nextLine();
-        for(int i=0;i<num;i++){
-            System.out.print("Nhập mã nhân viên: ");
-            String id = scanner.nextLine();
-            for(int j=0;j<Idemployees.size();j++){
-                if(Idemployees.get(j).equals(id)){
-                    System.out.println("Mã nhân viên đã tồn tại, vui lòng nhập lại");
-                    i--;
-                    return false;
+    Scanner scn = new Scanner(System.in);
+    boolean checkErr= false;
+    public void add(){
+        System.out.println("Nhập số lượng nhân viên muốn thêm");
+        int numberepls = scn.nextInt();
+        if(Check_File()){
+            for(int i=0;i<numberepls;i++){
+                System.out.println("Nhập thông tin của nhân viên thứ: "+(i+1));
+                System.out.println("Nhập mã nhân viên (số nguyên): ");
+                int id = scn.nextInt();
+                scn.nextLine();
+                for(int j=0;j<Idemployees.size();j++){
+                    if(Idemployees.get(j).equals(String.valueOf(id))){
+                        System.out.println("Mã nhân viên đã bị trùng lặp với nhân viên khác!");
+                        checkErr = false;
+                        return;
+                    }
                 }
+                Idemployees.add(String.valueOf(id));
+                System.out.println("Nhập họ tên nhân viên: ");
+                NameEmployees.add(scn.nextLine());
+                System.out.println("Nhập chức vụ nhân viên: ");
+                PositionEmployees.add(scn.nextLine());
+                System.out.println("Nhập lương nhân viên: ");
+                SalaryEmployees.add(String.valueOf(scn.nextDouble()) + "$");
+                scn.nextLine();
+                System.out.println("Nhập ngày vào làm nhân viên (dd/MM/yyyy): ");
+                String dateJoin = scn.nextLine();
+                DateJoinEmployees.add(dateJoin);
+                System.out.println("Nhập ngày nghỉ làm nhân viên: ");
+                String dateLeave = scn.nextLine();
+                System.out.println(dateLeave);
+                if(LocalDate.parse(dateJoin,DateTimeFormatter.ofPattern("dd/MM/yyyy")).isAfter(LocalDate.now())){
+                    System.out.println("Ngày vào làm không hợp lệ");
+                    checkErr = false;
+                    return;
+                }
+                if (!dateLeave.isEmpty()) {
+                    if(
+                        LocalDate.parse(dateLeave,DateTimeFormatter.ofPattern("dd/MM/yyyy")).isBefore(LocalDate.parse(dateJoin,DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                    ){
+                        System.out.println("Ngày nghỉ làm không hợp lệ");
+                        checkErr = false;
+                        return;
+                    }else if(LocalDate.parse(dateLeave,DateTimeFormatter.ofPattern("dd/MM/yyyy")).isAfter(LocalDate.now())){
+                        System.out.println("Ngày nghỉ làm không hợp lệ");
+                        checkErr = false;
+                        return;
+                    }else{
+                        DateLeaveEmployees.add(dateLeave);
+                    }
+                }
+                if(dateLeave == ""){
+                    DateLeaveEmployees.add("Chưa nghỉ");
+                }
+                EvaluationEmployees.add("Chưa đánh giá!");
             }
-            System.out.print("Nhập họ tên nhân viên: ");
-            NameEmployees.add(scanner.nextLine());
-            System.out.print("Nhập chức vụ nhân viên: ");
-            PositionEmployees.add(scanner.nextLine());
-            System.out.print("Nhập lương nhân viên: ");
-            SalaryEmployees.add(String.valueOf(scanner.nextDouble()));
-            scanner.nextLine();
-            System.out.print("Nhập ngày vào làm (dd/MM/yyyy): ");
-            String dateInput = scanner.nextLine();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate date = LocalDate.parse(dateInput, formatter);
-            DateJoinEmployees.add(date.toString()); // Chuyển ngày thành String để ghi vào file
-            System.out.print("Nhập ngày nghỉ làm (Nếu có) (dd/MM/yyyy): ");
-            dateInput = scanner.nextLine();
-            if(!dateInput.isEmpty()){
-                date = LocalDate.parse(dateInput, formatter);
-                DateLeaveEmployees.add(date.toString());
-            }else{
-                DateLeaveEmployees.add("Chưa nghỉ"); // Nếu ngày nghỉ làm không có, thêm "Chưa nghỉ" vào mảng
-            }
+            checkErr = true;
+            // for(int i=0;i<Idemployees.size();i++){
+            //     System.out.println(
+            //         Idemployees.get(i)+","+NameEmployees.get(i)+","+PositionEmployees.get(i)+","+SalaryEmployees.get(i)+","+DateJoinEmployees.get(i)+","+DateLeaveEmployees.get(i)
+            //     );
+            // }
+
         }
-        System.out.println("Đã thêm thành công");
-        return true;
     }
     public void writer(){
-        // System.out.println(Idemployees.size());
-        if(add()){
-            try(Writer wt = new FileWriter(file, false)) {
-                wt.write(Idemployees.get(0) + "," + NameEmployees.get(0) + "," + PositionEmployees.get(0) + "," + SalaryEmployees.get(0) + "," + DateJoinEmployees.get(0) + "," + DateLeaveEmployees.get(0));
-                for(int i =1;i< Idemployees.size();i++){
-                    wt.write("\n"+Idemployees.get(i) + "," + NameEmployees.get(i) + "," + PositionEmployees.get(i) + "," + SalaryEmployees.get(i) + "$," + DateJoinEmployees.get(i) + "," + DateLeaveEmployees.get(i));
+        if(checkErr){
+            try(Writer wt = new FileWriter(file, false)){
+                wt.write(Idemployees.get(0)+","+NameEmployees.get(0)+","+PositionEmployees.get(0)+","+SalaryEmployees.get(0)+","+DateJoinEmployees.get(0)+","+DateLeaveEmployees.get(0)+","+EvaluationEmployees.get(0));
+                for(int i=1;i<Idemployees.size();i++){
+                    wt.write("\n"+Idemployees.get(i)+","+NameEmployees.get(i)+","+PositionEmployees.get(i)+","+SalaryEmployees.get(i)+","+DateJoinEmployees.get(i)+","+DateLeaveEmployees.get(i)+","+EvaluationEmployees.get(i));
                 }
-            } catch (IOException e) {
-                System.out.println("Error: " + e.getMessage());
+            }catch(IOException e){
+                System.out.println("Lỗi ghi file: "+e.getMessage());
             }
         }else{
-            System.out.println("Thêm thất bại");
+            System.out.println("Không thể ghi dữ liệu");
         }
     }
 }
@@ -123,7 +149,7 @@ class EmployeesDisplay extends KhachSan {
                 create = create.toLowerCase();
                 if(create.equalsIgnoreCase("y")){
                     addEmployees.add();
-                    addEmployees.writer();
+                    // addEmployees.writer();
                     // System.out.println(addEmployees.Idemployees.size());
                 }else{
                     System.out.println("Không có dữ liệu để đọc");
@@ -138,6 +164,7 @@ class EmployeesDisplay extends KhachSan {
                     System.out.println("Lương nhân viên: "+epls.SalaryEmployees.get(i));
                     System.out.println("Ngày vào làm: "+epls.DateJoinEmployees.get(i));
                     System.out.println("Ngày nghỉ làm: "+epls.DateLeaveEmployees.get(i));
+                    System.out.println("Đánh giá: "+epls.EvaluationEmployees.get(i));
                     System.out.println("\n");
                 }
             }
@@ -156,7 +183,7 @@ class EditEmployees extends EmployeesCheckFile {
         boolean found = false;
         if(Check_File()){
             for(int i=0;i<Idemployees.size();i++){
-                System.out.println(Idemployees.get(i));
+                // System.out.println(Idemployees.get(i));
                 if(Idemployees.get(i).equals(id)){
                     System.out.println("Nhập họ tên mới: ");
                     NameEmployees.set(i, scanner.nextLine());
@@ -187,9 +214,9 @@ class EditEmployees extends EmployeesCheckFile {
             }else{
                 System.out.println("Đã sửa thành công");
                 try(Writer wt = new FileWriter(file, false)) {
-                    wt.write(Idemployees.get(0) + "," + NameEmployees.get(0) + "," + PositionEmployees.get(0) + "," + SalaryEmployees.get(0) + "," + DateJoinEmployees.get(0) + "," + DateLeaveEmployees.get(0));
+                    wt.write(Idemployees.get(0) + "," + NameEmployees.get(0) + "," + PositionEmployees.get(0) + "," + SalaryEmployees.get(0) + "," + DateJoinEmployees.get(0) + "," + DateLeaveEmployees.get(0)+","+EvaluationEmployees.get(0));
                     for(int i =1;i< Idemployees.size();i++){
-                        wt.write("\n"+Idemployees.get(i) + "," + NameEmployees.get(i) + "," + PositionEmployees.get(i) + "," + SalaryEmployees.get(i) + "$," + DateJoinEmployees.get(i) + "," + DateLeaveEmployees.get(i));
+                        wt.write("\n"+Idemployees.get(i) + "," + NameEmployees.get(i) + "," + PositionEmployees.get(i) + "," + SalaryEmployees.get(i) + "," + DateJoinEmployees.get(i) + "," + DateLeaveEmployees.get(i)+","+EvaluationEmployees.get(i));
                     }
                 } catch (Exception e) {
                     System.out.println("Lỗi ghi file: " + e.getMessage());
@@ -214,7 +241,6 @@ class DeleteEmployees extends EmployeesCheckFile {
                 if(createEmployees.equals("y")){
                     AddEmployees add = new AddEmployees();
                     add.add();
-                    add.writer();
                 }else{
                     System.out.println("\nKhông có dữ liệu!\n");
                     return;
@@ -241,9 +267,9 @@ class DeleteEmployees extends EmployeesCheckFile {
                 System.out.println("Không tìm thấy nhân viên");
             }else{
                 try(Writer wt = new FileWriter(file, false)) {
-                    wt.write(Idemployees.get(0)+","+NameEmployees.get(0)+","+PositionEmployees.get(0)+","+SalaryEmployees.get(0)+","+DateJoinEmployees.get(0)+","+DateLeaveEmployees.get(0));
+                    wt.write(Idemployees.get(0)+","+NameEmployees.get(0)+","+PositionEmployees.get(0)+","+SalaryEmployees.get(0)+","+DateJoinEmployees.get(0)+","+DateLeaveEmployees.get(0)+","+EvaluationEmployees.get(0));
                     for(int i=1;i<Idemployees.size();i++){
-                        wt.write("\n"+Idemployees.get(i)+","+NameEmployees.get(i)+","+PositionEmployees.get(i)+","+SalaryEmployees.get(i)+","+DateJoinEmployees.get(i)+","+DateLeaveEmployees.get(i));
+                        wt.write("\n"+Idemployees.get(i)+","+NameEmployees.get(i)+","+PositionEmployees.get(i)+","+SalaryEmployees.get(i)+","+DateJoinEmployees.get(i)+","+DateLeaveEmployees.get(i)+","+EvaluationEmployees.get(i));
                     }
                 } catch (Exception e) {
                     System.out.println("Lỗi"+ e.getMessage());
@@ -382,12 +408,40 @@ class SearchEmployees extends EmployeesCheckFile{
 
     }
 }
+
+class SortEmployees extends EmployeesCheckFile {
+    public void sort(){
+        if(Check_File()){
+            for(int i=1;i<EvaluationEmployees.size();i++){
+                if(EvaluationEmployees.get(i).equals("Chưa đánh giá!")){
+                    EvaluationEmployees.set(i, "0");
+                }
+            }
+            for(int i=1;i<EvaluationEmployees.size();i++){
+                for(int j=i+1;j<EvaluationEmployees.size();j++){
+                    if(Integer.parseInt(EvaluationEmployees.get(i))<Integer.parseInt(EvaluationEmployees.get(j))){
+                        String temp = EvaluationEmployees.get(i);
+                        EvaluationEmployees.set(i, EvaluationEmployees.get(j));
+                        EvaluationEmployees.set(j, temp);
+                    }
+                }
+            }
+            System.out.println("Chất lượng phục vụ từ cao đến thấp: ");
+            for(int i=1;i<EvaluationEmployees.size();i++){
+                if(EvaluationEmployees.get(i).equals("0")){
+                    EvaluationEmployees.set(i, "Chưa đánh giá!");
+                }
+                System.out.println("Chất lượng phục vụ của nhân viên " +NameEmployees.get(i)+" là: "+String.valueOf(EvaluationEmployees.get(i)));
+            }
+        }
+    }
+}
 public class eployees extends Rooms {
-    
     public static void main(String[] args) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            int n;
-            do {
+        @SuppressWarnings("resource")
+        Scanner scanner = new Scanner(System.in);
+        int n;
+        do {
                 System.out.println("<---------------------------->");
                 System.out.println("Quản lý nhân viên!");
                 System.out.println("Vui lòng chọn chức năng");
@@ -397,6 +451,7 @@ public class eployees extends Rooms {
                 System.out.println("3. Xoá nhân viên");
                 System.out.println("4. Hiển thị danh sách nhân viên");
                 System.out.println("5. Tìm kiếm nhân viên");
+                System.out.println("6. Hiển thị nhân viên có chất lượng phục vụ từ cao đến thấp");
                 n = scanner.nextInt();
                 switch(n){
                     case 0:
@@ -423,8 +478,11 @@ public class eployees extends Rooms {
                     SearchEmployees search = new SearchEmployees();
                     search.Search();
                     break;
+                    case 6:
+                    SortEmployees sort = new SortEmployees();
+                    sort.sort();
+                    break;
                 }
-            } while (n!=0);
-        }
+        } while (n!=0);
     }
 }

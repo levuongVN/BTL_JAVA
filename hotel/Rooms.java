@@ -90,25 +90,27 @@ class Room extends CheckFile {
         }
     }
     public void display(){
-        if(NumberRoom.size()==1){
-            System.out.println("Hiện chưa có phòng nào trong tệp, Ban có muốn thêm phòng mới vào tệp không?(Y/N)");
-            String create = scanner.next();
-            create = create.toLowerCase();
-            // Conditions to add new rooms
-            if(create.equalsIgnoreCase("y")){
-                addRooms();
-            }else if(create.equalsIgnoreCase("n")){
-                System.out.println("Không có dữ liệu phòng để đọc");
-                return;
-            }else{
-                System.out.println("Vui lòng nhập đúng định dạng Y/N");
-                return;
+        if(Check_File()==true){
+            if(NumberRoom.size()==1){
+                System.out.println("Hiện chưa có phòng nào trong tệp, Ban có muốn thêm phòng mới vào tệp không?(Y/N)");
+                String create = scanner.next();
+                create = create.toLowerCase();
+                // Conditions to add new rooms
+                if(create.equalsIgnoreCase("y")){
+                    addRooms();
+                }else if(create.equalsIgnoreCase("n")){
+                    System.out.println("Không có dữ liệu phòng để đọc");
+                    return;
+                }else{
+                    System.out.println("Vui lòng nhập đúng định dạng Y/N");
+                    return;
+                }
             }
-        }
-            System.out.println("Danh sách phòng:");
-            for(int i=1; i<NumberRoom.size(); i++){
+                System.out.println("Danh sách phòng:");
+                for(int i=1; i<NumberRoom.size(); i++){
                 System.out.println("Số phòng: " + NumberRoom.get(i) + "\t Loại phòng: " + TypeRoom.get(i) + "\t Giá phòng: " + CostRoom.get(i) + "\t Trạng thái phòng: " + Stt.get(i));
             }
+        }
     }
     public void updateRoom(){
         if(Check_File()== true){
@@ -198,10 +200,61 @@ class Room extends CheckFile {
             System.out.println("Không tìm thấy tệp dữ liệu phòng!");
         }
     }
-    
+    public void searchTypeRoom(){
+        int err = 0;
+        System.out.println("Nhập loại phòng bạn muốn tìm kiếm: ");
+        String Type = scanner.next();
+                    Type = Type.toLowerCase();
+                    for(int i=0;i<TypeRoom.size();i++){
+                        if(TypeRoom.get(i).equals(Type)){
+                            System.out.println("Số phòng: " + NumberRoom.get(i) + "\t Loại phòng: " + TypeRoom.get(i) + "\t Giá phòng: " + CostRoom.get(i) + "\t Trạng thái phòng: " + Stt.get(i));
+                        }else{
+                            err++;
+                        }
+                    }
+                    if(err == TypeRoom.size()){
+                        System.out.println("Không tìm thấy phòng nào theo loại phòng đã nhập!");
+            err = 0;
+        }
+    }
+    public void searchCostRoom(){
+        int err =0;
+        System.out.println("Nhập giá phòng bạn muốn tìm kiếm: ");
+        double costRooms = scanner.nextDouble();
+        String cost = String.valueOf(costRooms + "$");
+        for(int i=0;i<CostRoom.size();i++){
+            if(CostRoom.get(i).equals(cost)){
+                System.out.println("Số phòng: " + NumberRoom.get(i) + "\t Loại phòng: " + TypeRoom.get(i) + "\t Giá phòng: " + CostRoom.get(i) + "\t Trạng thái phòng: " + Stt.get(i));
+            }else{
+                err++;
+            }
+        }
+        if(err == CostRoom.size()){
+            System.out.println("Không tìm thấy phòng nào theo giá phòng đã nhập!");
+            err = 0;
+        }
+    }
+    public void searchStatusRoom(){
+        int err = 0;
+        System.out.println("Nhập trạng thái phòng bạn muốn tìm kiếm: ");
+        String stt = scanner.next();
+        String[] sttUper = stt.split("-");
+        sttUper[0] = sttUper[0].substring(0, 1).toUpperCase() + sttUper[0].substring(1).toLowerCase();
+        stt = String.join("-", sttUper);
+        for(int i=0;i<Stt.size();i++){
+            if(Stt.get(i).equals(stt)){
+                System.out.println("Số phòng: " + NumberRoom.get(i) + "\t Loại phòng: " + TypeRoom.get(i) + "\t Giá phòng: " + CostRoom.get(i) + "\t Trạng thái phòng: " + Stt.get(i));
+            }else{
+                err++;
+            }
+        }
+        if(err == Stt.size()){
+            System.out.println("Không tìm thấy phòng nào theo trạng thái phòng đã nhập!");
+            err = 0;
+        }
+    }
     public void SearchRoom() {
         if (Check_File() == true) {
-            int err =0;
             int N;
             do {
                 System.out.println("Bạn muốn tìm phòng theo tiêu chí nào?");
@@ -215,52 +268,13 @@ class Room extends CheckFile {
                     System.out.println("Thoát chương trình");
                     break;
                     case 1:
-                    System.out.println("Nhập loại phòng bạn muốn tìm kiếm: ");
-                    String Type = scanner.next();
-                    Type = Type.toLowerCase();
-                    for(int i=0;i<TypeRoom.size();i++){
-                        if(TypeRoom.get(i).equals(Type)){
-                            System.out.println("Số phòng: " + NumberRoom.get(i) + "\t Loại phòng: " + TypeRoom.get(i) + "\t Giá phòng: " + CostRoom.get(i) + "\t Trạng thái phòng: " + Stt.get(i));
-                        }else{
-                            err++;
-                        }
-                    }
-                    if(err == TypeRoom.size()){
-                        System.out.println("Không tìm thấy phòng nào theo loại phòng đã nhập!");
-                        err = 0;
-                    }
+                    searchTypeRoom();
                     break;
                     case 2:
-                    System.out.println("Nhập giá phòng bạn muốn tìm kiếm: ");
-                    double costRooms = scanner.nextDouble();
-                    String cost = String.valueOf(costRooms + "$");
-                    for(int i=0;i<CostRoom.size();i++){
-                        if(CostRoom.get(i).equals(cost)){
-                            System.out.println("Số phòng: " + NumberRoom.get(i) + "\t Loại phòng: " + TypeRoom.get(i) + "\t Giá phòng: " + CostRoom.get(i) + "\t Trạng thái phòng: " + Stt.get(i));
-                        }else{
-                            err++;
-                        }
-                    }
-                    if(err == CostRoom.size()){
-                        System.out.println("Không tìm thấy phòng nào theo giá phòng đã nhập!\n");
-                        err = 0;
-                    }
+                    searchCostRoom();
                     break;
                     case 3:
-                    System.out.println("Nhập trạng thái phòng bạn muốn tìm kiếm: ");
-                    String stt = scanner.next();
-                    stt = stt.toLowerCase();
-                    for(int i=0;i<Stt.size();i++){
-                        if(Stt.get(i).equals(stt)){
-                            System.out.println("Số phòng: " + NumberRoom.get(i) + "\t Loại phòng: " + TypeRoom.get(i) + "\t Giá phòng: " + CostRoom.get(i) + "\t Trạng thái phòng: " + Stt.get(i));
-                        }else{
-                            err++;
-                        }
-                    }
-                    if(err == Stt.size()){
-                        System.out.println("Không tìm thấy phòng nào theo trạng thái phòng đã nhập!");
-                        err = 0;
-                    }
+                    searchStatusRoom();
                     break;
                 }
             } while (N!=0);
